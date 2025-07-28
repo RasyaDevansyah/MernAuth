@@ -8,13 +8,13 @@ export const register = async (req, res) => {
     const {name, email, password} = req.body;
 
     if (!name || !email || !password) {
-        return res.status(400).json({success: false , message: "Please fill all fields"});
+        return res.json({success: false , message: "Please fill all fields"});
     }
 
     try{
         const existingUser = await userModel.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({success: false, message: "User already exists"});
+            return res.json({success: false, message: "User already exists"});
         }
 
         const hashedPassword = await bycrypt.hash(password, 10);
@@ -46,11 +46,11 @@ export const register = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
 
-        return res.status(201).json({success: true, message: "Registration successful"});
+        return res.json({success: true, message: "Registration successful"});
 
     }
     catch(error){
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
 
@@ -59,17 +59,17 @@ export const login = async (req, res) => {
     const {email, password} = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({success: false, message: "Please fill all fields"});
+        return res.json({success: false, message: "Please fill all fields"});
     }
 
     try{
         const user = await userModel.findOne({ email });
         if (!user) {
-            return res.status(400).json({success: false, message: "Invalid credentials"});
+            return res.json({success: false, message: "Invalid credentials"});
         }
         const isMatch = await bycrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({success: false, message: "Invalid credentials"});
+            return res.json({success: false, message: "Invalid credentials"});
         }
 
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, { expiresIn: '7d'});
@@ -81,10 +81,10 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
         
-        return res.status(200).json({success: true, message: "Login successful"});
+        return res.json({success: true, message: "Login successful"});
     }
     catch(error){
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 
 }
@@ -99,10 +99,10 @@ export const logout = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        return res.status(200).json({success: true, message: "Logout successful"});
+        return res.json({success: true, message: "Logout successful"});
 
     } catch (error) {
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
 
@@ -144,20 +144,20 @@ export const verifyEmail = async (req, res) => {
     const {userId, otp} = req.body;
 
     if (!userId || !otp) {
-        return res.status(400).json({success: false, message: "Missing Details"});
+        return res.json({success: false, message: "Missing Details"});
     }
     try {
         const user = await userModel.findById(userId);
         if (!user) {
-            return res.status(404).json({success: false, message: "User not found"});
+            return res.json({success: false, message: "User not found"});
         }
 
         if(user.verifyOtp === '' || user.verifyOtp !== otp) {
-            return res.status(400).json({success: false, message: "Invalid OTP"});
+            return res.json({success: false, message: "Invalid OTP"});
         }
 
         if(user.verifyOtpExpireAt < Date.now()) {
-            return res.status(400).json({success: false, message: "OTP expired"});
+            return res.json({success: false, message: "OTP expired"});
         }
 
         user.isAccountVerified = true;
@@ -165,11 +165,11 @@ export const verifyEmail = async (req, res) => {
         user.verifyOtpExpireAt = 0;
         
         await user.save();
-        return res.status(200).json({success: true, message: "Account verified successfully"});
+        return res.json({success: true, message: "Account verified successfully"});
 
     }
     catch (error) {
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 
 }
@@ -187,13 +187,13 @@ export const sendResetOtp = async (req, res) => {
     const {email} = req.body;
 
     if (!email) {
-        return res.status(400).json({success: false, message: "Please provide email"});
+        return res.json({success: false, message: "Please provide email"});
     }
     try {
         const user = await userModel.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({success: false, message: "User not found"});
+            return res.json({success: false, message: "User not found"});
         }
         const otp = String(Math.floor(100000  + Math.random() * 900000));
 
@@ -210,10 +210,10 @@ export const sendResetOtp = async (req, res) => {
         };
         await transporter.sendMail(mailOptions);
 
-        return res.status(200).json({success: true, message: "Password reset OTP sent to your email"});
+        return res.json({success: true, message: "Password reset OTP sent to your email"});
 
     }catch(error) {
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
 
@@ -222,19 +222,19 @@ export const resetPassword = async (req, res) => {
     const {email, otp, newPassword} = req.body;
 
     if (!email || !otp || !newPassword) {
-        return res.status(400).json({success: false, message: "Please fill all fields"});
+        return res.json({success: false, message: "Please fill all fields"});
     }
     try{
         const user = await userModel.findOne({ email });
         if (!user) {
-            return res.status(404).json({success: false, message: "User not found"});
+            return res.json({success: false, message: "User not found"});
         }
 
         if(user.resetOtp === '' || user.resetOtp !== otp) {
-            return res.status(400).json({success: false, message: "Invalid OTP"});
+            return res.json({success: false, message: "Invalid OTP"});
         }
         if(user.resetOtpExpireAt < Date.now()) {
-            return res.status(400).json({success: false, message: "OTP expired"});
+            return res.json({success: false, message: "OTP expired"});
         }
 
         const hashedPassword = await bycrypt.hash(newPassword, 10);
@@ -244,10 +244,10 @@ export const resetPassword = async (req, res) => {
 
         await user.save();
 
-        return res.status(200).json({success: true, message: "Password reset successful"});
+        return res.json({success: true, message: "Password reset successful"});
 
 
     }catch (error) {
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
