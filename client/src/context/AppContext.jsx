@@ -1,4 +1,6 @@
 import { createContext, useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export const AppContext = createContext()
 
@@ -9,10 +11,30 @@ export const AppContextProvider = (props) => {
     const [isLoggedIn, setIsLoggedin] = useState(false);
     const [userData, setUserData] = useState(false);
     
+
+    const getUserData = async () => {
+        try{
+            axios.defaults.withCredentials = true
+            const {data} = await axios.get(backendUrl + '/api/user/profile')
+            if(data.success){
+                setUserData(data.userData)
+            }
+            else{
+                toast.error(data.message)
+            }
+        }
+        catch(err){
+            toast.error("Something went wrong while fetching user data")
+        }
+
+    }
+
+
     const value = {
         backendUrl,
         isLoggedIn, setIsLoggedin,
-        userData, setUserData
+        userData, setUserData,
+        getUserData
     }
 
     return (

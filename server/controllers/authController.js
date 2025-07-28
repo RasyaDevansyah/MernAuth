@@ -114,7 +114,7 @@ export const sendVerifyOtp = async (req, res) => {
         const user = await userModel.findById(userId);
 
         if(user.isAccountVerified) {
-            return res.status(400).json({success: false, message: "Account already verified"});
+            return res.json({success: false, message: "Account already verified"});
         }
 
         const otp = String(Math.floor(100000  + Math.random() * 900000));
@@ -132,11 +132,11 @@ export const sendVerifyOtp = async (req, res) => {
         }
         await transporter.sendMail(mailOptions);
 
-        return res.status(200).json({success: true, message: "Verification OTP sent to your email"});
+        return res.json({success: true, message: "Verification OTP sent to your email"});
 
     }
     catch(error){
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
 
@@ -176,9 +176,9 @@ export const verifyEmail = async (req, res) => {
 
 export const isAuthenticated = async (req, res) => {
     try {
-        return res.status(200).json({success: true});
+        return res.json({success: true});
     } catch (error) {
-        return res.status(500).json({success: false, message: "Internal server error"});
+        return res.json({success: false, message: "Internal server error"});
     }
 }
 

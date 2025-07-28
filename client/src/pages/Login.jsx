@@ -8,7 +8,7 @@ import { AppContext } from '../context/AppContext.jsx'
 const Login = () => {
   const navigate = useNavigate()
 
-  const {backendUrl, setIsLoggedin} = useContext(AppContext)
+  const {backendUrl, setIsLoggedin, getUserData} = useContext(AppContext)
 
   const [state, setState] = useState('Sign Up')
   
@@ -31,6 +31,7 @@ const Login = () => {
         )
         if(data.success){
           setIsLoggedin(true)
+          getUserData()
           navigate('/')
         }
         else{
@@ -49,6 +50,7 @@ const Login = () => {
         )
         if(data.success){
           setIsLoggedin(true)
+          getUserData()
           navigate('/')
         }
         else{
