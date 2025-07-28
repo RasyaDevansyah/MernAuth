@@ -84,6 +84,7 @@ export const login = async (req, res) => {
         return res.json({success: true, message: "Login successful"});
     }
     catch(error){
+        console.error("Error in login:", error);
         return res.json({success: false, message: "Internal server error"});
     }
 
@@ -109,7 +110,7 @@ export const logout = async (req, res) => {
 // Send verification OTP to user's email
 export const sendVerifyOtp = async (req, res) => {
     try{
-        const {userId} = req.body;
+        const {userId} = req.user;
 
         const user = await userModel.findById(userId);
 
@@ -141,7 +142,12 @@ export const sendVerifyOtp = async (req, res) => {
 }
 
 export const verifyEmail = async (req, res) => {
-    const {userId, otp} = req.body;
+    console.log(req.body)
+    
+    const {otp} = req.body;
+    const {userId} = req.user;
+
+    console.log("Verifying email for userId:", userId, "with OTP:", otp);
 
     if (!userId || !otp) {
         return res.json({success: false, message: "Missing Details"});
@@ -169,6 +175,7 @@ export const verifyEmail = async (req, res) => {
 
     }
     catch (error) {
+        console.error("Error in verifyEmail:", error);
         return res.json({success: false, message: "Internal server error"});
     }
 
@@ -178,6 +185,7 @@ export const isAuthenticated = async (req, res) => {
     try {
         return res.json({success: true});
     } catch (error) {
+        console.error("Error in isAuthenticated:", error);
         return res.json({success: false, message: "Internal server error"});
     }
 }
