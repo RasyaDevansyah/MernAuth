@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { use, useContext, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -9,7 +9,7 @@ const EmailVerify = () => {
   axios.defaults.withCredentials = true
   const navigate = useNavigate()
 
-  const {backendUrl, getUserData} = useContext(AppContext)
+  const {backendUrl, getUserData, isLoggedin, userData} = useContext(AppContext)
 
   const inputRefs = React.useRef([])
 
@@ -59,7 +59,9 @@ const EmailVerify = () => {
 
   }
 
-
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate('/')
+  }, [isLoggedin, userData])
 
   return (
     <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400'>
@@ -72,13 +74,13 @@ const EmailVerify = () => {
 
         <div className='flex justify-between mb-8'>
           {Array(6).fill(0).map((_, index) => (
-              <input type="text" maxLength='1' key={index} require
+              <input type="text" maxLength='1' key={index} required
               className='w-12 h-12 bg-[#333A5C] text-white text-center text-xl rounded-md'
               ref={e => inputRefs.current[index] = e}
               onInput={(e) => handleInput(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={(e) => handlePaste(e)}
-              d/>
+              />
           ))}
         </div>
 
