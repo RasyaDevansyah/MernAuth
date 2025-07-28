@@ -36,14 +36,14 @@ export const register = async (req, res) => {
         });
 
         // Sending welcome email
-        const mailOptions = {
-            from: process.env.SENDER_EMAIL,
-            to: email,
-            subject: 'Welcome to MERN Auth',
-            text: `Welcome to MERN Auth. Your account has been created with email id: ${email}.`
-        }
+        // const mailOptions = {
+        //     from: process.env.SENDER_EMAIL,
+        //     to: email,
+        //     subject: 'Welcome to MERN Auth',
+        //     text: `Welcome to MERN Auth. Your account has been created with email id: ${email}.`
+        // }
 
-        await transporter.sendMail(mailOptions);
+        // await transporter.sendMail(mailOptions);
 
 
         return res.json({success: true, message: "Registration successful"});
