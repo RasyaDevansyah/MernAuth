@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import { assets } from '../assets/assets'
-import { useNavigate } from 'react-router-dom'
+import { data, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { AppContext } from '../context/AppContext'
 import { toast } from 'react-toastify'
@@ -69,6 +69,41 @@ const ResetPassword = () => {
   }
 
 
+  const onSubmitOTP = async (e)=>{
+    e.preventDefault();
+    const otpArray = inputRefs.current.map(e=> e.value)
+    setOtp(otpArray.join(''))
+    setIsOtpSubmited(true)
+  }
+
+
+  const onSubmitNewPassword = async (e) =>{
+    e.preventDefault();
+    try{
+      const {data} = await axios.post(backendUrl + '/api/auth/reset-password',{
+
+        email:email,
+        otp:otp,
+        newPassword:newPassword
+      })
+
+      if(data.success){
+        toast.success(data.message)
+        navigate('/login')
+      } else{
+        toast.error(data.message)
+        setIsOtpSubmited(false)
+      }
+      
+    }catch(error){
+      toast.error(error.message)
+      console.log("Error resetting password: " + error)
+    }
+
+
+  }
+
+
   return (
     <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400'>
 
@@ -97,7 +132,7 @@ const ResetPassword = () => {
 
       {!isOtpSubmited && isEmailSent &&
 
-        <form className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm">
+        <form onSubmit={onSubmitOTP} className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm">
           <h1 className='text-white text-2xl font-semibold text-center mb-4'>Reset Password OTP</h1>
           <p className='text-center mb-6 text-indigo-300'>Enter the 6-digit code sent to your email id.</p>
 
@@ -113,7 +148,7 @@ const ResetPassword = () => {
             ))}
           </div>
 
-          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full'
+          <button className='w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full cursor-pointer'
             type='submit'
           >Submit</button>
         </form>
@@ -122,7 +157,7 @@ const ResetPassword = () => {
 
       {isOtpSubmited && isEmailSent &&
 
-        <form className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm">
+        <form onSubmit={onSubmitNewPassword} className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm">
           <h1 className='text-white text-2xl font-semibold text-center mb-4'>New password</h1>
           <p className='text-center mb-6 text-indigo-300'>Enter the new password below</p>
 
