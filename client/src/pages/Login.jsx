@@ -32,11 +32,13 @@ const Login = () => {
         )
         if (data.success) {
           setIsLoggedin(true)
+          toast.success(data.message)
           getUserData()
           navigate('/')
         }
         else {
           toast.error(data.message)
+          
         }
 
       }
@@ -51,6 +53,7 @@ const Login = () => {
         )
         if (data.success) {
           setIsLoggedin(true)
+          toast.success(data.message)
           getUserData()
           navigate('/')
         }
